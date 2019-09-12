@@ -136,7 +136,23 @@ siecIrisK <- newff(n.neurons = c(4,3,3),
 k<- 10
 set.seed(15)
 idx<- sample(1:l.danych,l.danych,replace=FALSE)
+krok <- c(round(seq(from=0,to=l.danych-1,by=l.danych/k),0),
+          l.danych)
+blad<- c()
+for(i in 1:k)
+{
+  idxTestK <- idx[(krok[i]+1):krok[i+1]]
+  wynikIrisK <- train(siecIrisK, iris[-idxTest,-5], 
+                      wZadane[-idxTest,],
+                      error.criterium = "LMS",
+                      report=FALSE,
+                      show.step = 10, n.shows = 800)
+  yik <- sim(wynikIrisK$net, iris[idxTestK,-5])
+  wynikIrisK <- test.klasyf(wZadane[idxTestK,],yik)
+  blad[i] <- 1-sum(diag(wynikIrisK))/sum(wynikIrisK)
+}
 
+cat("Dok³adnoœæ klasyfikacji:", (1-mean(blad))*100,"%")
 
 
 
